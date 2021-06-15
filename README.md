@@ -30,3 +30,5 @@ For Tokenizaton, I used Pytorch Tokenization using [spacy](https://spacy.io) for
     [KOR LEN]: 600000
     [ENG LEN]: 600000
     ```
+
+#TODO: I am trying to re-construct the model because the training time is exceedingly slow. Perhaps the Dataloader is the problem.
