@@ -47,7 +47,10 @@ def build_vocabs(sentences: List[str], src_tokenizer, tgt_tokenizer):
   special_symbols = ['<pad>', '<sos>', '<eos>', '<unk>']
 
   for ln in ['SRC_LANGUAGE', 'TGT_LANGUAGE']:
-    vocabs[ln] = build_vocab_from_iterator(iterator=yield_tokens(sentences, ln, tokens))
+    vocabs[ln] = build_vocab_from_iterator(iterator=yield_tokens(sentences, ln, tokens),
+                                           min_freq=3,
+                                           specials=special_symbols,
+                                           special_first=True)
 
   for ln in ['SRC_LANGUAGE', 'TGT_LANGUAGE']:
     vocabs[ln].set_default_index(UNK_IDX)
