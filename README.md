@@ -12,23 +12,25 @@ For Tokenizaton, I used Pytorch Tokenization using [spacy](https://spacy.io) for
     * # of Korean Sentences: 60,000
     * # of English Sentences: 60,000
     ```
-    Before Tokenization:
+
     [KOR]: 11장에서는 예수님이 이번엔 나사로를 무덤에서 불러내어 죽은 자 가운데서 살리셨습니다.
     [ENG]: In Chapter 11 Jesus called Lazarus from the tomb and raised him from the dead.
 
     [KOR]: 6.5, 7, 8 사이즈가 몇 개나 더 재입고 될지 제게 알려주시면 감사하겠습니다.
     [ENG]: I would feel grateful to know how many stocks will be secured of size 6.5, 7, and 8.
 
-    After Tokenization:
-    [KOR]: ['11', '장에서는', '예수님', '이', '이번', '엔', '나사로를', '무덤에서', '불러', '내어', '죽은', '자', '가운데', '서', '살리셨습니다.']
-    [ENG]: ['In', 'Chapter', '11', 'Jesus', 'called', 'Lazarus', 'from', 'the', 'tomb', 'and', 'raised', 'him', 'from', 'the', 'dead', '.']
-
-    [KOR]: ['6.5,', '7,', '8', '사이즈가', '몇', '개나', '더', '재입고', '될지', '제게', '알려주', '시면', '감사하겠습니다.']
-    [ENG]: ['I', 'would', 'feel', 'grateful', 'to', 'know', 'how', 'many', 'stocks', 'will', 'be', 'secured', 'of', 'size', '6.5', ',', '7', ',', 'and', '8', '.']
-
-
     [KOR LEN]: 600000
     [ENG LEN]: 600000
+
+    soynlp tokenizer:
+    [KOR]: ['11', '장에서는', '예수님', '이', '이번', '엔', '나사로를', '무덤에서', '불러', '내어', '죽은', '자', '가운데', '서', '살리셨습니다.']
+    spacy tokenizer:
+    [ENG]: ['In', 'Chapter', '11', 'Jesus', 'called', 'Lazarus', 'from', 'the', 'tomb', 'and', 'raised', 'him', 'from', 'the', 'dead', '.']
+
+    sentenceBPE tokenizers:
+    [KOR]: ['11', '장', '에서는', '예수', '님이', '이번엔', '나', '사로', '를', '무', '에서', '불러', '내어', '죽은', '자', '가운데', '서', '살', '리', '셨습니다', '.']
+    [ENG]: ['In', 'Cha', 'pter', '11', 'Jesus', 'called', 'La', 'z', 'ar', 'us', 'from', 'the', 'tomb', 'and', 'raised', 'him', 'from', 'the', 'dead', '.']    
     ```
+
 
 #TODO: I am trying to re-construct the model because the training time is exceedingly slow. Perhaps the Dataloader is the problem.
