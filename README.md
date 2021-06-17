@@ -44,4 +44,4 @@ For Tokenizaton, I used Pytorch Tokenization using [spacy](https://spacy.io) for
     ```
 
 
-#TODO: I am trying to re-construct the model because the training time is exceedingly slow. Perhaps the Dataloader is the problem.
+#TODO: Trying to turn the program into a runnable script which lets you train on your device with hyperparameters and data as variables.
