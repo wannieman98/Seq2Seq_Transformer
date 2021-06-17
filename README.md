@@ -32,5 +32,16 @@ For Tokenizaton, I used Pytorch Tokenization using [spacy](https://spacy.io) for
     [ENG]: ['In', 'Cha', 'pter', '11', 'Jesus', 'called', 'La', 'z', 'ar', 'us', 'from', 'the', 'tomb', 'and', 'raised', 'him', 'from', 'the', 'dead', '.']    
     ```
 
+###### Requirements
+    * Such libraries are necessary to run the program.
+    ```
+    torch==1.9.0
+    spacy==
+    soynlp==0.0.493
+    tokenizers==0.10.3
+    torchtesxt==0.10.0
+    en-core-web-sm==2.1.0
+    ```
+
 
 #TODO: I am trying to re-construct the model because the training time is exceedingly slow. Perhaps the Dataloader is the problem.
