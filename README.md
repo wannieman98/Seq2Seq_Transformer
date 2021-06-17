@@ -8,7 +8,7 @@ For this project, the Korean-English translation corpus from [AI Hub](https://ai
 
 For Tokenizaton, I used Pytorch Tokenization using [spacy](https://spacy.io) for english and [soynlp](https://github.com/lovit/soynlp#vectorizer). But the alternative is to use [tokenizers](https://huggingface.co/docs/tokenizers/python/latest/api/reference.html#tokenizer) module to train BPEtokenizers from scratch.
 
-###### Overview
+#### Overview
     * # of Korean Sentences: 60,000
     * # of English Sentences: 60,000
     ```
@@ -32,7 +32,7 @@ For Tokenizaton, I used Pytorch Tokenization using [spacy](https://spacy.io) for
     [ENG]: ['In', 'Cha', 'pter', '11', 'Jesus', 'called', 'La', 'z', 'ar', 'us', 'from', 'the', 'tomb', 'and', 'raised', 'him', 'from', 'the', 'dead', '.']    
     ```
 
-###### Requirements
+#### Requirements
     * Such libraries are necessary to run the program.
     ```
     torch==1.9.0
