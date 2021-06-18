@@ -3,12 +3,12 @@
 Python implementation of [Transformer](http://nlp.seas.harvard.edu/2018/04/03/attention#training-data-and-batching) using PyTorch to translate Korea into English.
 
 
-#### Dataset
+### Dataset
 For this project, the Korean-English translation corpus from [AI Hub](https://aihub.or.kr/aidata/87/download) was utilized to train the Transformer. 
 
 For Tokenizaton, I used Pytorch Tokenization using [spacy](https://spacy.io) for english and [soynlp](https://github.com/lovit/soynlp#vectorizer). But the alternative is to use [tokenizers](https://huggingface.co/docs/tokenizers/python/latest/api/reference.html#tokenizer) module to train BPEtokenizers from scratch.
 
-#### Overview
+### Overview
     * # of Korean Sentences: 60,000
     * # of English Sentences: 60,000
     ```
@@ -32,8 +32,8 @@ For Tokenizaton, I used Pytorch Tokenization using [spacy](https://spacy.io) for
     [ENG]: ['In', 'Cha', 'pter', '11', 'Jesus', 'called', 'La', 'z', 'ar', 'us', 'from', 'the', 'tomb', 'and', 'raised', 'him', 'from', 'the', 'dead', '.']    
     ```
 
-#### Requirements
-    * Such libraries are necessary to run the program.
+### Requirements
+* Such libraries are necessary to run the program.
     ```
     torch==1.9.0
     spacy==
@@ -44,7 +44,7 @@ For Tokenizaton, I used Pytorch Tokenization using [spacy](https://spacy.io) for
     ```
 
 ### Usage
-    * By default, the trainer will use the korean-english dataset from [AI Hub](https://aihub.or.kr/aidata/87/download), in order to use your own dataset, please create a folder with datasets in it and run the script.
+* By default, the trainer will use the korean-english dataset from [AI Hub](https://aihub.or.kr/aidata/87/download), in order to use your own dataset, please create a folder with datasets in it and run the script.
     ```
     default:
     python train.py
@@ -53,9 +53,9 @@ For Tokenizaton, I used Pytorch Tokenization using [spacy](https://spacy.io) for
     python train.py --f YOUR_FILE_PATH
     ```
 
-    * You can also choose which tokenizers to use
-        1. soynlp tokenizers for korean and spacy tokenizers for english(default)
-        2. BPE Tokenizers from scratch for both kor and eng tokenizers
+* You can also choose which tokenizers to use
+    1. soynlp tokenizers for korean and spacy tokenizers for english(default)
+    2. BPE Tokenizers from scratch for both kor and eng tokenizers
     
     ````
     custom:
