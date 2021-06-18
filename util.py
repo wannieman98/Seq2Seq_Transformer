@@ -1,6 +1,5 @@
-import torch.nn as nn
-from .constants import *
-import torch
+from constants import *
+
 
 def generate_square_subsequent_mask(sz, device):
     mask = (torch.triu(torch.ones((sz, sz), device=device)) == 1).transpose(0, 1)
@@ -11,7 +10,7 @@ def create_mask(src, tgt, device):
     src_seq_len = src.shape[0]
     tgt_seq_len = tgt.shape[0]
 
-    tgt_mask = generate_square_subsequent_mask(tgt_seq_len)
+    tgt_mask = generate_square_subsequent_mask(tgt_seq_len, device)
     src_mask = torch.zeros((src_seq_len, src_seq_len),device=device).type(torch.bool)
 
     src_padding_mask = (src == PAD_IDX).transpose(0, 1)
@@ -41,12 +40,37 @@ def greedy_decode(model, src, src_mask, max_len, start_symbol, device):
     return ys
 
 
-def translate(model, src_sentence):
+def translate(model, src_sentence, vocabs, text_transform):
     model.eval()
     src = text_transform['SRC_LANGUAGE'](src_sentence).view(-1, 1)
     num_tokens = src.shape[0]
     src_mask = (torch.zeros(num_tokens, num_tokens)).type(torch.bool)
     tgt_tokens = greedy_decode(
         model,  src, src_mask, max_len=num_tokens + 5, start_symbol=SOS_IDX).flatten()
-    result = " ".join(vocabs['TGT_LANGUAGE'].lookup_tokens(list(tgt_tokens.cpu().numpy()))).replace("<sos> ", "").replace(" <eos>", "")
+    return " ".join(vocabs['TGT_LANGUAGE'].lookup_tokens(list(tgt_tokens.cpu().numpy()))).replace("<sos> ", "").replace(" <eos>", "")
+
+class ScheduledOptim:
+    def __init__(self, optimizer, warmup_steps, hidden_dim):
+        self.init_lr = np.power(hidden_dim, -0.5)
+        self.optimizer = optimizer
+        self.step_num = 0
+        self.warmup_steps = warmup_steps
+    
+    def step(self):
+        self.step_num += 1
+        lr = self.init_lr * self.get_scale()
+        
+        for p in self.optimizer.param_groups:
+            p['lr'] = lr
+            
+        self.optimizer.step()
+    
+    def zero_grad(self):
+        self.optimizer.zero_grad()
+    
+    def get_scale(self):
+        return np.min([
+            np.power(self.step_num, -0.5),
+            self.step_num * np.power(self.warmup_steps, -1.5)
+        ])
     

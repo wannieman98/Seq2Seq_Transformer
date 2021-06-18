@@ -43,5 +43,23 @@ For Tokenizaton, I used Pytorch Tokenization using [spacy](https://spacy.io) for
     en-core-web-sm==2.1.0
     ```
 
+### Usage
+    * By default, the trainer will use the korean-english dataset from [AI Hub](https://aihub.or.kr/aidata/87/download), in order to use your own dataset, please create a folder with datasets in it and run the script.
+    ```
+    default:
+    python train.py
+
+    custom:
+    python train.py --f YOUR_FILE_PATH
+    ```
+
+    * You can also choose which tokenizers to use
+        1. soynlp tokenizers for korean and spacy tokenizers for english(default)
+        2. BPE Tokenizers from scratch for both kor and eng tokenizers
+    
+    ````
+    custom:
+    python train.py -t 2
+
 
 #TODO: Trying to turn the program into a runnable script which lets you train on your device with hyperparameters and data as variables.

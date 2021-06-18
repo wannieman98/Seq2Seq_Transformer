@@ -1,12 +1,10 @@
-from torchtext.vocab import Vocab, build_vocab_from_iterator
+from constants import *
+from soynlp.word import WordExtractor
+from soynlp.tokenizer import LTokenizer
+from torchtext.data.utils import get_tokenizer
 from tokenizers import SentencePieceBPETokenizer
 from tokenizers.pre_tokenizers import Whitespace
-from torchtext.data.utils import get_tokenizer
-from soynlp.tokenizer import LTokenizer
-from soynlp.word import WordExtractor
-from typing import Iterable, List
-from collections import Counter
-from constants import *
+from torchtext.vocab import Vocab, build_vocab_from_iterator
 
 
 def get_ko_words(sentences):
@@ -57,7 +55,7 @@ def yield_tokens(data_iter, language, tokens):
 
 def get_tokens(sentences, token_type):
   tokens = {}
-  if token_type == 1:
+  if token_type == 2:
     ko_token = get_BPE_tokenizer(sentences['src_lang'])
     en_token = get_BPE_tokenizer(sentences['tgt_lang']) 
   else:

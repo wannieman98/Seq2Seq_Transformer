@@ -1,7 +1,6 @@
 import math
-import torch
 from util import *
-import torch.nn as nn
+from constants import *
 from torch import Tensor
 import torch.nn.functional as F
 from  torch.nn import Transformer as tf
@@ -53,8 +52,7 @@ class Transformer(nn.Module):
         self.tgt_tok_emb = Embedding(tgt_vocab_size, emb_size)
         self.positional_encoding = PositionalEncoding(emb_size, dropout=dropout)
 
-    def forward(self, src, tgt):
-        src_mask, tgt_mask, src_padding_mask, tgt_padding_mask = create_mask(src,tgt)
+    def forward(self, src, tgt, src_mask, tgt_mask, src_padding_mask, tgt_padding_mask, memory_key_padding_mask):
         memory_key_padding_mask = src_padding_mask
         src_emb = self.positional_encoding(self.src_tok_emb(src))
         tgt_emb = self.positional_encoding(self.tgt_tok_emb(tgt))

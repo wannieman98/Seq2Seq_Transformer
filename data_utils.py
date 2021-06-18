@@ -1,12 +1,9 @@
-from torch.nn.utils.rnn import pad_sequence
-from torch.utils.data import DataLoader
-from fetch_tokenizers import *
-from typing import List
 from constants import *
-import pandas as pd
-import numpy as np
-import torch
-import os
+from fetch_tokenizers import *
+from typing import Iterable, List
+from torch.utils.data import DataLoader
+from torch.nn.utils.rnn import pad_sequence
+
 
 def convert_to_csv(root, files):
   count = 1
