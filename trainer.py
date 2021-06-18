@@ -56,7 +56,6 @@ class Trainer:
     def train(self):
         self.transformer.train()
 
-        train_loss = 0
         print("\nbegin training...")
 
         for epoch in range(self.params['num_epoch']):
