@@ -31,7 +31,7 @@ def convert_to_sentences(csv_files):
       print(f'[KOR]: {kor}')
       print(f'[ENG]: {eng}\n')
   print(f'[KOR LEN]: {len(kor_sentences)}')
-  print(f'[ENG LEN]: {len(eng_sentences)}')
+  print(f'[ENG LEN]: {len(eng_sentences)}\n')
   
   return kor_sentences, eng_sentences
 

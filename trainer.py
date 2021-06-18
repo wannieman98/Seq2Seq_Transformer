@@ -57,7 +57,7 @@ class Trainer:
         self.transformer.train()
 
         train_loss = 0
-        print("begin training...")
+        print("\nbegin training...")
 
         for epoch in range(self.params['num_epoch']):
             epoch_loss = 0

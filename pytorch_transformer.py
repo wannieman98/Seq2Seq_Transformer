@@ -8,17 +8,17 @@ from  torch.nn import Transformer as tf
 class PositionalEncoding(nn.Module):
     def __init__(self, emb_size, dropout, max_len=5000):
         super(PositionalEncoding, self).__init__()
-        pos = torch.arange(0, max_len).unsqueeze(1)
+        self.dropout = nn.Dropout(dropout)
+        pos = torch.arange(0, max_len).reshape(max_len, 1)
         pos_emb = torch.zeros((max_len, emb_size))
-        div = torch.exp(torch.arange(0, emb_size, 2) * -(math.log(10000.0) / emb_size))
+        div = torch.exp(- torch.arange(0, emb_size, 2)* math.log(10000) / emb_size)
         pos_emb[:, 0::2] = torch.sin(pos * div)
         pos_emb[:, 1::2] = torch.cos(pos * div)
-        pos_emb = pos.unsqueeze(0)
+        pos_emb = pos.unsqueeze(-2)
         self.register_buffer('pos_emb', pos_emb)
 
     def forward(self, token_embedding: Tensor):
-      with torch.no_grad():
-        return self.dropout(token_embedding + self.pos_embedding[:token_embedding.size(0), :])
+        return self.dropout(token_embedding + self.pos_emb[:token_embedding.size(0), :])
 
 class Embedding(nn.Module):
     def __init__(self, vocab_size, emb_size):
