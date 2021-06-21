@@ -11,7 +11,9 @@ def trans(sent):
     vocabs = build_vocabs(sentences, tokens)
     model = trainer.Trainer(load=True)
     model.eval()
-    translate(model, sent, vocabs, text_transform)
+    text_transform = get_text_transform(tokens, vocabs)
+    result = translate(model, sent, vocabs, text_transform)
+    print(result)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Korean to English Translation')

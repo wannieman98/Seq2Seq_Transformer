@@ -53,13 +53,24 @@ For Tokenizaton, I used Pytorch Tokenization using [spacy](https://spacy.io) for
 * As well as choose to load pre-trained transformer
     1. False(default)
     2. True
+(Addition)
+* Now you can control the hyperparameters as well.
     ```
     default:
     python train.py
 
     custom:
-    python train.py --f YOUR_FILE_PATH --t 2 --l True
+    train.py [-h] [--t {1,2}] [--f F] [--l {True,False}]
+             [--num_epoch NUM_EPOCH] [--nhead NHEAD] [--emb_size EMB_SIZE]
+             [--ffn_hid_dim FFN_HID_DIM] [--batch_size BATCH_SIZE]
+             [--num_encoder_layers NUM_ENCODER_LAYERS]
+             [--num_decoder_layers NUM_DECODER_LAYERS]
     ```
+
+* Predicting
+````
+python predict.py --input KOREAN_INPUT("나는 배고프다.")
+```
 
 ### References
 

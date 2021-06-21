@@ -4,7 +4,7 @@ import argparse
 
 def main(config):
     model = trainer.Trainer(file_path=config.f, token_type=config.t, load=config.l,
-                            emb_size=config.emb_size, num_epoch=config.num_epoch, 
+                            emb_size=config.emb_size, num_epoch=config.num_epoch, nhead=config.nhead, 
                             ffn_hid_dim=config.ffn_hid_dim, batch_size=config.batch_size,
                             num_encoder_layers=config.num_encoder_layers, num_decoder_layers=config.num_decoder_layers)
     model.train()
