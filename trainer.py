@@ -45,7 +45,8 @@ class Trainer:
 
         self.criterion = nn.CrossEntropyLoss(ignore_index=PAD_IDX)
 
-        if load == True:
+        if load:
+            print(load)
             state_dict = torch.load('checkpoints/checkpoint.pth')
             self.transformer.load_state_dict(state_dict)
         else:

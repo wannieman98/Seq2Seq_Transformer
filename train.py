@@ -11,9 +11,9 @@ def main(config):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Transformer Machine Translation')
-    parser.add_argument('--t', type=int, default=1, choices=[1, 2])
-    parser.add_argument('--f', type=str, default="Default")
-    parser.add_argument('--l', type=bool, default="False", choices=[True, False])
+    parser.add_argument('--token_type', type=int, default=1, choices=[1, 2])
+    parser.add_argument('--file', type=str, default="Default")
+    parser.add_argument('--load', type=bool, default="False", choices=[True, False])
     parser.add_argument('--num_epoch', type=int, default=15)
     parser.add_argument('--nhead', type=int, default=8)
     parser.add_argument('--emb_size', type=int, default=512)

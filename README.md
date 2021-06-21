@@ -60,7 +60,7 @@ For Tokenizaton, I used Pytorch Tokenization using [spacy](https://spacy.io) for
     python train.py
 
     custom:
-    train.py [-h] [--t {1,2}] [--f F] [--l {True,False}]
+    train.py [-h] [--token_type {1,2}] [--file F] [--load {True,False}]
              [--num_epoch NUM_EPOCH] [--nhead NHEAD] [--emb_size EMB_SIZE]
              [--ffn_hid_dim FFN_HID_DIM] [--batch_size BATCH_SIZE]
              [--num_encoder_layers NUM_ENCODER_LAYERS]
