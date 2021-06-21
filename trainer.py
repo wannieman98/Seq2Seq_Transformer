@@ -47,7 +47,7 @@ class Trainer:
 
         if load:
             print(load)
-            state_dict = torch.load('checkpoints/checkpoint.pth')
+            state_dict = torch.load('checkpoints/script_checkpoint.pth')
             self.transformer.load_state_dict(state_dict)
         else:
             for p in self.transformer.parameters():

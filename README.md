@@ -1,4 +1,4 @@
-# simple_transformer PyTorch
+# Simple Transformer PyTorch
 
 Python implementation of [Transformer](http://nlp.seas.harvard.edu/2018/04/03/attention#training-data-and-batching) using PyTorch to translate Korea into English.
 
@@ -68,10 +68,12 @@ For Tokenizaton, I used Pytorch Tokenization using [spacy](https://spacy.io) for
     ```
 
 * Predicting
-````
+```
 python predict.py --input KOREAN_INPUT("나는 배고프다.")
 ```
 
 ### References
+http://nlp.seas.harvard.edu/2018/04/03/attention#training-data-and-batching
+https://github.com/Huffon/pytorch-transformer-kor-eng
 
 #TODO: Trying to turn the program into a runnable script which lets you train on your device with hyperparameters and data as variables.
