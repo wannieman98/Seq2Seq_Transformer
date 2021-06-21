@@ -10,10 +10,10 @@ random.seed(5)
 torch.manual_seed(5)
 
 class Trainer:
-    def __init__(self, file_path='Default', num_epoch=NUM_EPOCH,
-                 emb_size=EMB_SIZE, nhead=NHEAD, ffn_hid_dim=FFN_HID_DIM, batch_size=BATCH_SIZE, 
-                 num_encoder_layers=NUM_ENCODER_LAYERS, num_decoder_layers=NUM_DECODER_LAYERS,
-                 token_type=1, load=False):
+    def __init__(self, file_path, num_epoch,
+                 emb_size, nhead, ffn_hid_dim, batch_size, 
+                 num_encoder_layers, num_decoder_layers,
+                 token_type, load):
         self.params = {'num_epoch': num_epoch,
                        'emb_size': emb_size,
                        'nhead': nhead,
@@ -89,4 +89,4 @@ class Trainer:
 
             print("Epoch: {}, Train loss: {}, Epoch time: {}".format(epoch, epoch_loss, end_time-start_time))
             
-        torch.save(self.transformer.state_dict(), 'checkpoints/checkpoint.pth')
+        torch.save(self.transformer.state_dict(), 'checkpoints/script_checkpoint.pth')

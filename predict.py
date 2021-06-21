@@ -1,17 +1,17 @@
 from constants import *
 from data_utils import *
+import trainer
 from util import *
 import argparse
 
 def trans(sent):
     kor, eng = get_kor_eng_sentences()
     sentences = {'src_lang': kor, 'tgt_lang': eng}
-    tokens = get_tokens(sentences)
+    tokens = get_tokens(sentences, 1)
     vocabs = build_vocabs(sentences, tokens)
-    model = trainer.Trainer(file_path=config.f, token_type=config.t, load=config.l)
-    model.train()
-    os.remove("constants.pyc")
-    os.remove("constants.util.pyc")
+    model = trainer.Trainer(load=True)
+    model.eval()
+    translate(model, sent, vocabs, text_transform)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Korean to English Translation')
