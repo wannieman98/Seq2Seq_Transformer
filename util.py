@@ -49,6 +49,17 @@ def translate(model, src_sentence, vocabs, text_transform):
         model,  src, src_mask, max_len=num_tokens + 5, start_symbol=SOS_IDX).flatten()
     return " ".join(vocabs['TGT_LANGUAGE'].lookup_tokens(list(tgt_tokens.cpu().numpy()))).replace("<sos> ", "").replace(" <eos>", "")
 
+def epoch_time(time, curr_epoch, total_epochs):
+    minutes = int(time / 60)
+    seconds = int(time % 60)
+
+    epoch_left = total_epochs - curr_epoch
+    time_left = epoch_left * time
+    time_left_min = int(time_left / 60)
+    time_left_sec = int(time_left % 60)
+
+    return minutes, seconds, time_left_min, time_left_sec    
+
 class ScheduledOptim:
     def __init__(self, optimizer, warmup_steps, hidden_dim):
         self.init_lr = np.power(hidden_dim, -0.5)

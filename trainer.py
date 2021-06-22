@@ -46,7 +46,6 @@ class Trainer:
         self.criterion = nn.CrossEntropyLoss(ignore_index=PAD_IDX)
 
         if load:
-            print(load)
             state_dict = torch.load('checkpoints/script_checkpoint.pth')
             self.transformer.load_state_dict(state_dict)
         else:
@@ -88,6 +87,9 @@ class Trainer:
 
             end_time = time.time()
 
-            print("Epoch: {}, Train loss: {}, Epoch time: {}".format(epoch, epoch_loss, end_time-start_time))
+            minutes, seconds, time_left_min, time_left_sec = epoch_time(end_time-start_time, epoch, self.params['num_epoch'])
+
+            print("Epoch: {}, Train_loss: {}".format(epoch, epoch_loss))
+            print("Epoch time: {}m {}s, Time left for training: {}m {}s".format(minutes, seconds, time_left_min, time_left_sec))
             
         torch.save(self.transformer.state_dict(), 'checkpoints/script_checkpoint.pth')
