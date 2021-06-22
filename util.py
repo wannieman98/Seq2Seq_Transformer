@@ -20,7 +20,6 @@ def create_mask(src, tgt, device):
 def greedy_decode(model, src, src_mask, max_len, start_symbol, device):
     src = src.to(device)
     src_mask = src_mask.to(device)
-
     memory = model.encode(src, src_mask)
     ys = torch.ones(1, 1).fill_(start_symbol).type(torch.long).to(device)
     for i in range(max_len-1):
