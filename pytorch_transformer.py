@@ -60,7 +60,7 @@ class Transformer(nn.Module):
         return self.generator(outs)
 
     def encode(self, src, src_mask):
-        return self.transformer(self.positional_encoding(self.src_tok_emb(src)), src_mask)
+        return self.trnasformer.encoder(self.positional_encoding(self.src_tok_emb(src)), src_mask)
 
     def decode(self, tgt, memory, tgt_mask):
         return self.trnasformer.decoder(self.positional_encoding(self.tgt_tok_emb(tgt)), memory, tgt_mask)

@@ -11,7 +11,7 @@ def convert_to_csv(root, files):
   for filepath in files:
     if filepath[-4:] == "xlsx":
       xls = pd.read_excel(os.path.join(root, filepath), index_col=None)
-      destination = 'data/spoken' + str(count) + '.csv'
+      destination = 'data/korean_to_english' + str(count) + '.csv'
       xls.to_csv(destination, encoding='utf-8', index=False)
       csv_files.append(destination)
   
@@ -62,7 +62,7 @@ def divide_files(sentences):
 def sequential_transforms(*transforms):
     def func(txt_input):
         for transform in transforms:
-            txt_input = transform(txt_input)
+          txt_input = transform(txt_input)
         return txt_input
     return func
 
@@ -79,6 +79,7 @@ def get_text_transform(tokens, vocabs):
                                                 vocabs[ln], 
                                                 tensor_transform)
   return text_transform
+
 
 def collate_fn(batch):
     src_batch, tgt_batch = [], []

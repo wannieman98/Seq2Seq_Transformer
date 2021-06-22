@@ -3,7 +3,6 @@ import trainer
 import argparse
 
 def main(param):
-    print(param.load)
     model = trainer.Trainer(file_path=param.file, token_type=param.token_type, load=param.load,
                             emb_size=param.emb_size, num_epoch=param.num_epoch, nhead=param.nhead, 
                             ffn_hid_dim=param.ffn_hid_dim, batch_size=param.batch_size,
