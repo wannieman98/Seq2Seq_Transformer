@@ -16,12 +16,11 @@ def trans(sent):
     model = Transformer(num_encoder_layers=3, num_decoder_layers=3,
                         nhead=8, dim_feedforward=512, emb_size=512,
                         src_vocab_size=len(vocabs['src_lang']), tgt_vocab_size=len(vocabs['tgt_lang']))
-    state_dict = torch.load('checkpoints/script_checkpoint.pth')
     # od = OrderedDict()
     # for key in state_dict:
     #     new_key = "transformer" + key[10:]
     #     od[new_key] = state_dict.pop[key]
-    model.load_state_dict(state_dict)
+    model = torch.load('checkpoints/script_checkpoint_mod.pt')
     text_transform = get_text_transform(tokens, vocabs)
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     model.to(device)
