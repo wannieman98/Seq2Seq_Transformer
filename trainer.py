@@ -1,7 +1,6 @@
 import time
 import random
 from util import *
-from constants import *
 from data_utils import *
 import torch.optim as optim
 from pytorch_transformer import *

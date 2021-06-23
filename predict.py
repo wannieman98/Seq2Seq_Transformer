@@ -1,7 +1,5 @@
 from pytorch_transformer import Transformer
-from constants import *
 from data_utils import *
-import trainer
 from util import *
 import argparse
 # from collections import OrderedDict

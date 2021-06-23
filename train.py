@@ -1,4 +1,3 @@
-from constants import *
 import trainer
 import argparse
 
