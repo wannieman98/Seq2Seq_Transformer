@@ -23,14 +23,15 @@ def convert_to_csv(root, files):
 
 def convert_to_sentences(csv_files):
   dataframes = [ pd.read_csv(filepath) for filepath in csv_files ]
-  data = pd.concat(dataframes, ignore_index=True)
+  # data = pd.concat(dataframes, ignore_index=True)
 
   kor_sentences = []
   eng_sentences = []
-  for index, sent in data.iterrows():
-    _, kor, eng = sent
-    kor_sentences.append(kor)
-    eng_sentences.append(eng)
+  for data in dataframes:
+    for index, sent in data.iterrows():
+      _, kor, eng = sent
+      kor_sentences.append(kor)
+      eng_sentences.append(eng)
   for kor, eng in zip(kor_sentences[:5], eng_sentences[:5]):
       print(f'[KOR]: {kor}')
       print(f'[ENG]: {eng}\n')
@@ -108,3 +109,7 @@ def data_process(sentences, vocabs, tokens):
 def get_train_iter(sentences, tokens, vocabs, batch_size):
   train_data = data_process(sentences, vocabs, tokens)
   return DataLoader(train_data, batch_size=batch_size, shuffle=True, collate_fn=collate_fn)
+
+def get_test_iter(sentences, tokens, vocabs, batch_size):
+  test_data = data_process(sentences, vocabs, tokens)
+  return DataLoader(test_data, batch_size=batch_size, collate_fn=collate_fn)

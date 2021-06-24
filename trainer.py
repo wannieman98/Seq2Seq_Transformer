@@ -1,3 +1,4 @@
+from copy import deepcopy as dc
 import time
 import random
 from util import *
@@ -6,20 +7,20 @@ import torch.optim as optim
 from pytorch_transformer import *
 
 random.seed(5)
-torch.manual_seed(5)
+torch.manual_seed(5)    
+
 
 class Trainer:
     def __init__(self, file_path, num_epoch,
                  emb_size, nhead, ffn_hid_dim, batch_size, 
-                 num_encoder_layers, num_decoder_layers,
-                 token_type, load):
+                 n_layers, dropout, token_type, load, variation):
         self.params = {'num_epoch': num_epoch,
                        'emb_size': emb_size,
                        'nhead': nhead,
                        'ffn_hid_dim': ffn_hid_dim,
                        'batch_size': batch_size,
-                       'num_encoder_layers': num_encoder_layers,
-                       'num_decoder_layers': num_decoder_layers}
+                       'n_layers': n_layers,
+                       'dropout': dropout}
 
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         kor, eng = get_kor_eng_sentences(file_path)
@@ -28,13 +29,10 @@ class Trainer:
         self.vocabs = build_vocabs(self.sentences, self.tokens)
         self.train_iter = get_train_iter(self.sentences, self.tokens, self.vocabs, self.params['batch_size'])
 
+
         self.params['src_vocab_size'] = len(self.vocabs['src_lang'])
         self.params['tgt_vocab_size'] = len(self.vocabs['tgt_lang'])
 
-        self.transformer = Transformer(self.params['num_encoder_layers'], self.params['num_decoder_layers'],
-                                       self.params['emb_size'], self.params['nhead'], 
-                                       self.params['src_vocab_size'], self.params['tgt_vocab_size'],
-                                       self.params['ffn_hid_dim']).to(self.device)
         
         self.optimizer = ScheduledOptim(
             optim.Adam(self.transformer.parameters(), betas=(0.9, 0.98), eps=1e-9),
@@ -44,13 +42,10 @@ class Trainer:
 
         self.criterion = nn.CrossEntropyLoss(ignore_index=PAD_IDX)
 
-        if load:
-            state_dict = torch.load('checkpoints/script_checkpoint_inf.pth')
-            self.transformer.load_state_dict(state_dict)
-        else:
-            for p in self.transformer.parameters():
-                if p.dim() > 1:
-                    nn.init.xavier_uniform_(p)
+        self.transformer = build_model(self.vocabs, self.params['nhead'], self.params['emb_size'], 
+                                       self.params['ffn_hid_dim'], self.params['n_layers'], self.params['dropout'], 
+                                       self.device, load=load, variation=variation)
+
 
     def train(self):
         self.transformer.train()
@@ -69,9 +64,9 @@ class Trainer:
 
                 self.optimizer.zero_grad()
 
-                src_mask, tgt_mask, src_padding_mask, tgt_padding_mask = create_mask(src, tgt_input, self.device)
+                src_mask, tgt_mask = create_mask(src, tgt, self.device)
 
-                logits = self.transformer(src, tgt_input, src_mask, tgt_mask, src_padding_mask, tgt_padding_mask, src_padding_mask)
+                logits = self.transformer(src, tgt_input, src_mask, tgt_mask)
 
                 tgt_out = tgt[1:, :]
 
@@ -91,5 +86,31 @@ class Trainer:
             print("Epoch: {}, Train_loss: {}".format(epoch, epoch_loss))
             print("Epoch time: {}m {}s, Time left for training: {}m {}s".format(minutes, seconds, time_left_min, time_left_sec))
             
-        torch.save(self.transformer.state_dict(), 'checkpoints/script_checkpoint_inf.pth')
-        torch.save(self.transformer, 'checkpoints/script_checkpoint_mod.pt')
+        torch.save(self.transformer.state_dict(), 'checkpoints/new_script_checkpoint_inf.pth')
+        torch.save(self.transformer, 'checkpoints/new_script_checkpoint_mod.pt')
+
+
+class ScheduledOptim:
+    def __init__(self, optimizer, warmup_steps, hidden_dim):
+        self.init_lr = np.power(hidden_dim, -0.5)
+        self.optimizer = optimizer
+        self.step_num = 0
+        self.warmup_steps = warmup_steps
+    
+    def step(self):
+        self.step_num += 1
+        lr = self.init_lr * self.get_scale()
+        
+        for p in self.optimizer.param_groups:
+            p['lr'] = lr
+            
+        self.optimizer.step()
+    
+    def zero_grad(self):
+        self.optimizer.zero_grad()
+    
+    def get_scale(self):
+        return np.min([
+            np.power(self.step_num, -0.5),
+            self.step_num * np.power(self.warmup_steps, -1.5)
+        ])
