@@ -8,9 +8,10 @@ class Decoder(Module):
         self.layers = clones(layer, N)
         self.norm = LayerNorm(layer.size)
 
-    def forward(self, x, memory, src_mask, tgt_mask):
+    def forward(self, tgt, memory, src_mask, tgt_mask):
+
         for layer in self.layers:
-            x = layer(x, memory, src_mask, tgt_mask)
+            x = layer(tgt, memory, tgt_mask, src_mask)
         return self.norm(x)
 
 class DecoderLayer(Module):
@@ -22,7 +23,7 @@ class DecoderLayer(Module):
         self.sublayer = clones(SubLayer(size, dropout), 3)
         self.size = size
 
-    def forward(self, x, memory, src_mask, tgt_mask):
+    def forward(self, x, memory, tgt_mask, src_mask):
         x = self.sublayer[0](x, lambda x: self.self_attn(x, x, x, tgt_mask))
         x = self.sublayer[1](x, lambda x: self.src_attn(memory, memory, x, src_mask))
         return self.sublayer[2](x, self.feed_forward)

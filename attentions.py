@@ -1,12 +1,13 @@
 import torch
 from util import *
 import torch.nn as nn
-import torch.functional as F
+import torch.nn.functional as F
 
 def attention(query, key, value, mask=None, dropout=None):
     q_k = torch.matmul(query, key.transpose(-2, -1))
-    scores = torch.div(q_k, math.sqrt(query.size(-1)))
+    scores = q_k / math.sqrt(query.size(-1))
     if mask is not None:
+        mask = mask.unsqueeze(1)
         scores = scores.masked_fill(mask == 0, -1e9)
 
     output = F.softmax(scores, dim=-1)
@@ -32,14 +33,14 @@ class MultiHeadedAttention(nn.Module):
         batch_size = query.size(0)
 
         # Linear through of all query, key, and value layers.
-        query, key, value = [linear(x).view(batch_size, -1, self.nhead, self.d_k).transpose(1,2)
-                             for linear, x in zip(self.linears, (query, key, value))]
+        query, key, value = [ linear(x).view(batch_size, -1, self.nhead, self.d_k).transpose(1,2)
+                             for linear, x in zip(self.linears, (query, key, value)) ]
 
         # Scaled Dot-Product Attention layer
         x, attn = attention(query, key, value, mask, self.dropout)
 
         # Concatenate the nhead layers of attention outputs
-        x = x.transpose(1, 2).contiguous().view(batch_size, -1, self.h * self.d_k)
+        x = x.transpose(1, 2).contiguous().view(batch_size, -1, self.nhead * self.d_k)
 
         # Final linear layer to get the final output
         return self.linears[3](x) 

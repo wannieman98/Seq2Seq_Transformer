@@ -1,10 +1,11 @@
-from copy import deepcopy as dc
 import time
 import random
 from util import *
 from data_utils import *
 import torch.optim as optim
 from pytorch_transformer import *
+from nltk.translate.bleu_score import SmoothingFunction
+from nltk.translate import bleu
 
 random.seed(5)
 torch.manual_seed(5)    
@@ -27,11 +28,32 @@ class Trainer:
         self.sentences = {'src_lang': kor, 'tgt_lang': eng}
         self.tokens = get_tokens(self.sentences, token_type)
         self.vocabs = build_vocabs(self.sentences, self.tokens)
-        self.train_iter = get_train_iter(self.sentences, self.tokens, self.vocabs, self.params['batch_size'])
+        self.text_transform = get_text_transform(self.tokens, self.vocabs)
+        train_sentences, val_sentences, self.test_sentences = divide_sentences(self.sentences)
+        self.train_iter = get_train_iter(train_sentences, self.tokens, self.vocabs, self.params['batch_size'])
+        self.val_iter = get_test_iter(val_sentences, self.tokens, self.vocabs, self.params['batch_size'])
+        self.test_iter = get_test_iter(self.test_sentences, self.tokens, self.vocabs, self.params['batch_size'])
 
 
         self.params['src_vocab_size'] = len(self.vocabs['src_lang'])
         self.params['tgt_vocab_size'] = len(self.vocabs['tgt_lang'])
+
+
+  
+        self.transformer = Transformer(num_encoder_layers=self.params['n_layers'], num_decoder_layers= self.params['n_layers'],
+                                        emb_size=self.params['emb_size'], nhead=self.params['nhead'],
+                                        src_vocab_size=len(self.vocabs['src_lang']), tgt_vocab_size=len(self.vocabs['tgt_lang']), 
+                                        dim_feedforward=self.params['ffn_hid_dim'], dropout=self.params['dropout'])
+
+        if load:
+            state_dict = torch.load_state_dict('checkpoints/script_checkpoint_inf.pth')
+            self.transformer.load_state_dict(state_dict)
+        else:
+            for p in self.transformer.parameters():
+                if p.dim() > 1:
+                    nn.init.xavier_uniform_(p)
+
+        self.transformer.to(self.device)
 
         
         self.optimizer = ScheduledOptim(
@@ -42,52 +64,108 @@ class Trainer:
 
         self.criterion = nn.CrossEntropyLoss(ignore_index=PAD_IDX)
 
-        self.transformer = build_model(self.vocabs, self.params['nhead'], self.params['emb_size'], 
-                                       self.params['ffn_hid_dim'], self.params['n_layers'], self.params['dropout'], 
-                                       self.device, load=load, variation=variation)
-
 
     def train(self):
-        self.transformer.train()
-
         print("\nbegin training...")
 
         for epoch in range(self.params['num_epoch']):
-            epoch_loss = 0
             start_time = time.time()
 
-            for src, tgt in self.train_iter:
-                src = src.to(self.device)
-                tgt = tgt.to(self.device)
-
-                tgt_input = tgt[:-1, :]
-
-                self.optimizer.zero_grad()
-
-                src_mask, tgt_mask = create_mask(src, tgt, self.device)
-
-                logits = self.transformer(src, tgt_input, src_mask, tgt_mask)
-
-                tgt_out = tgt[1:, :]
-
-                loss = self.criterion(logits.reshape(-1, logits.shape[-1]), tgt_out.reshape(-1))                    
-                loss.backward()
-
-                self.optimizer.step()
-
-                epoch_loss += loss.item()
-
-            epoch_loss /= len(self.train_iter)
+            epoch_loss = train_loop(self.train_iter, self.transformer, self.optimizer, self.criterion, self.device)
+            val_loss = val_loop(self.val_iter, self.transformer, self.criterion, self.device)
 
             end_time = time.time()
 
+            if (epoch + 1) % 5 == 0:
+                test(self.test_iter, self.transformer, self.criterion, self.device)
+
+            if (epoch + 1) % 10 == 0:
+                get_bleu(self.test_sentences, self.transformer, self.vocabs, self.text_transform, self.device)
+
             minutes, seconds, time_left_min, time_left_sec = epoch_time(end_time-start_time, epoch, self.params['num_epoch'])
 
-            print("Epoch: {}, Train_loss: {}".format(epoch, epoch_loss))
+            print("Epoch: {}, Train_loss: {}, Val_loss".format(epoch+1, round(epoch_loss, 3), round(val_loss, 3)))
             print("Epoch time: {}m {}s, Time left for training: {}m {}s".format(minutes, seconds, time_left_min, time_left_sec))
             
-        torch.save(self.transformer.state_dict(), 'checkpoints/new_script_checkpoint_inf.pth')
-        torch.save(self.transformer, 'checkpoints/new_script_checkpoint_mod.pt')
+        torch.save(self.transformer.state_dict(), 'checkpoints/new_script_checkpoint_inf2.pth')
+        torch.save(self.transformer, 'checkpoints/new_script_checkpoint_mod2.pt')
+
+def train_loop(train_iter, model, optimizer, criterion, device):
+    epoch_loss = 0
+    model.train()
+    for src, tgt in train_iter:
+        src = src.to(device)
+        tgt = tgt.to(device)
+
+        tgt_input = tgt[:-1, :]
+
+        optimizer.zero_grad()
+        
+        src_mask, tgt_mask, src_padding_mask, tgt_padding_mask = create_mask(src, tgt_input, device)
+        logits = model(src, tgt_input, src_mask, tgt_mask, src_padding_mask, tgt_padding_mask, src_padding_mask)
+        
+        tgt_out = tgt[1:, :]
+
+        loss = criterion(logits.reshape(-1, logits.shape[-1]), tgt_out.reshape(-1))                    
+        loss.backward()
+        
+        optimizer.step()
+
+        epoch_loss += loss.item()
+
+    return epoch_loss / len(train_iter)
+
+def val_loop(val_iter, model, criterion, device):
+    model.eval()
+    val_loss = 0
+
+    for src, tgt in val_iter:
+        src = src.to(device)
+        tgt = tgt.to(device)
+
+        tgt_input = tgt[:-1, :]
+        src_mask, tgt_mask, src_padding_mask, tgt_padding_mask = create_mask(src, tgt_input, device)
+
+        logits = model(src, tgt_input, src_mask, tgt_mask,src_padding_mask, tgt_padding_mask, src_padding_mask)
+
+        tgt_out = tgt[1:, :]
+        loss = criterion(logits.reshape(-1, logits.shape[-1]), tgt_out.reshape(-1))
+        val_loss += loss.item()
+
+    return val_loss / len(val_iter)
+
+def test(test_iter, model, criterion, device):
+    model.eval()
+    test_loss = 0
+    bleu_score = 0
+    for src, tgt in test_iter:
+        src = src.to(device)
+        tgt = tgt.to(device)
+
+        tgt_input = tgt[:-1, :]
+        src_mask, tgt_mask, src_padding_mask, tgt_padding_mask = create_mask(src, tgt_input, device)
+
+        logits = model(src, tgt_input, src_mask, tgt_mask,src_padding_mask, tgt_padding_mask, src_padding_mask)
+
+        tgt_out = tgt[1:, :]
+        loss = criterion(logits.reshape(-1, logits.shape[-1]), tgt_out.reshape(-1))
+        test_loss += loss.item()
+    test_loss /= len(test_iter)
+
+    print("Test Loss: {}".format(test_loss, 3))
+
+def get_bleu(sentences, model, vocabs, text_transform, device):
+    smoothie = SmoothingFunction().method
+    bleu_scores = 0
+
+    for ko, eng in zip(sentences['src_lang'], sentences['tgt_lang']):
+        output = translate(model, ko, vocabs, text_transform, device).split()
+        candidate = eng.split()
+
+        bleu_scores += bleu(candidate, output, smoothing_function=smoothie)
+
+
+    print('BLEU score -> {}'.format(bleu_scores/len(sentences['src_lang'])))
 
 
 class ScheduledOptim:

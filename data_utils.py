@@ -1,5 +1,6 @@
 import os
 import torch
+import random
 import numpy as np
 import pandas as pd
 from fetch_tokenizers import *
@@ -45,22 +46,23 @@ def get_kor_eng_sentences(file_path="data"):
   files = os.listdir("./data")
   csv_files = convert_to_csv(root, files)
   return convert_to_sentences(csv_files)
-    
 
-def divide_files(sentences):
-  train_mask = np.random.rand(len(sentences[0])) < 0.8
 
-  train = [ sentence[train_mask] for sentence in sentences ]
-  remaining_data = [ sentence[~train_mask] for sentence in sentences ]
+def divide_sentences(sentences):
+  train, val, test = {}, {}, {}
+  for ln in ['src_lang', 'tgt_lang']:
+    temp = sentences[ln]
+    random.shuffle(temp)
+    train_len = int(len(temp)*0.8)
+    val_len = int(len(temp)*0.1)+train_len
+    test_len =  int(len(temp)*0.1)+val_len+train_len
+    tmp_train,tmp_val,tmp_test = temp[0:train_len], temp[train_len:val_len], temp[val_len:test_len]
 
-  val_test_mask = np.random.rand(len(remaining_data[0])) < 0.5
+    train[ln], val[ln], test[ln] = tmp_train, tmp_val, tmp_test
 
-  val = [ remaining_data[val_test_mask] for data in remaining_data ]
-  test = [ remaining_data[~val_test_mask] for data in remaining_data ]
-
-  print("train data length: {}".format(len(train)))
-  print("validation data length: {}".format(len(val)))
-  print("test data length: {}".format(len(test)))
+  print("train data length: {}".format(len(train['src_lang'])))
+  print("validation data length: {}".format(len(val['src_lang'])))
+  print("test data length: {}".format(len(test['src_lang'])))
 
   return train, val, test
 

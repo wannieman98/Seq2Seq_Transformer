@@ -2,7 +2,6 @@ from pytorch_transformer import Transformer
 from data_utils import *
 from util import *
 import argparse
-from collections import OrderedDict
 
 
 def trans(sent):
