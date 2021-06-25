@@ -84,7 +84,7 @@ class Trainer:
 
             minutes, seconds, time_left_min, time_left_sec = epoch_time(end_time-start_time, epoch, self.params['num_epoch'])
 
-            print("Epoch: {}, Train_loss: {}, Val_loss".format(epoch+1, round(epoch_loss, 3), round(val_loss, 3)))
+            print("Epoch: {}, Train_loss: {}, Val_loss: {}".format(epoch+1, round(epoch_loss, 3), round(val_loss, 3)))
             print("Epoch time: {}m {}s, Time left for training: {}m {}s".format(minutes, seconds, time_left_min, time_left_sec))
             
         torch.save(self.transformer.state_dict(), 'checkpoints/new_script_checkpoint_inf2.pth')

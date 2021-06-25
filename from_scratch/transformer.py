@@ -31,9 +31,13 @@ class encoder_decoder(nn.Module):
         super(encoder_decoder, self).__init__()
         self.encoder_layers = clones(encoder_layer, N)
         self.decoder_layers = clones(decoder_layer, N)
+        self.N = N
 
     def forward(self, src, src_mask, tgt, tgt_mask):
-        pass
+        for n in range(self.N):
+            x = self.decoder_layers[n](self.encoder_layers[n](src, src_mask), src_mask, tgt, tgt_mask)
+        return x
+
 
 
 class p_transformer(nn.Module):
