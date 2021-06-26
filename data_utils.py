@@ -1,10 +1,9 @@
 import os
 import torch
 import random
-import numpy as np
 import pandas as pd
 from fetch_tokenizers import *
-from typing import Iterable, List
+from typing import List
 from torch.utils.data import DataLoader
 from torch.nn.utils.rnn import pad_sequence
 
@@ -24,8 +23,7 @@ def convert_to_csv(root, files):
 
 def convert_to_sentences(csv_files):
   dataframes = [ pd.read_csv(filepath) for filepath in csv_files ]
-  # data = pd.concat(dataframes, ignore_index=True)
-
+  
   kor_sentences = []
   eng_sentences = []
   for data in dataframes:
@@ -60,9 +58,9 @@ def divide_sentences(sentences):
 
     train[ln], val[ln], test[ln] = tmp_train, tmp_val, tmp_test
 
-  print("train data length: {}".format(len(train['src_lang'])))
+  print("\ntrain data length: {}".format(len(train['src_lang'])))
   print("validation data length: {}".format(len(val['src_lang'])))
-  print("test data length: {}".format(len(test['src_lang'])))
+  print("test data length: {}\n".format(len(test['src_lang'])))
 
   return train, val, test
 

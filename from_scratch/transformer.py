@@ -1,10 +1,10 @@
 from torch import nn
 import torch.nn as nn
 from copy import deepcopy as dc
-from pytorch_encoder import *
-from pytorch_decoder import *
-from attentions import *
-from position import *
+from from_scratch.pytorch_encoder import *
+from from_scratch.pytorch_decoder import *
+from from_scratch.attention import *
+from from_scratch.position import *
 from util import *
 
 class o_transformer(nn.Module):
@@ -37,7 +37,6 @@ class encoder_decoder(nn.Module):
         for n in range(self.N):
             x = self.decoder_layers[n](self.encoder_layers[n](src, src_mask), src_mask, tgt, tgt_mask)
         return x
-
 
 
 class p_transformer(nn.Module):

@@ -10,7 +10,6 @@ from nltk.translate import bleu
 random.seed(5)
 torch.manual_seed(5)    
 
-
 class Trainer:
     def __init__(self, file_path, num_epoch,
                  emb_size, nhead, ffn_hid_dim, batch_size, 
@@ -39,7 +38,6 @@ class Trainer:
         self.params['tgt_vocab_size'] = len(self.vocabs['tgt_lang'])
 
 
-  
         self.transformer = Transformer(num_encoder_layers=self.params['n_layers'], num_decoder_layers= self.params['n_layers'],
                                         emb_size=self.params['emb_size'], nhead=self.params['nhead'],
                                         src_vocab_size=len(self.vocabs['src_lang']), tgt_vocab_size=len(self.vocabs['tgt_lang']), 
@@ -137,7 +135,7 @@ def val_loop(val_iter, model, criterion, device):
 def test(test_iter, model, criterion, device):
     model.eval()
     test_loss = 0
-    bleu_score = 0
+
     for src, tgt in test_iter:
         src = src.to(device)
         tgt = tgt.to(device)
@@ -163,7 +161,6 @@ def get_bleu(sentences, model, vocabs, text_transform, device):
         candidate = eng.split()
 
         bleu_scores += bleu(candidate, output, smoothing_function=smoothie)
-
 
     print('BLEU score -> {}'.format(bleu_scores/len(sentences['src_lang'])))
 
