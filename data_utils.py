@@ -103,7 +103,6 @@ def data_process(sentences, vocabs, tokens):
     ko_tensor = text_transform['src_lang'](kor.rstrip("\n"))
     en_tensor = text_transform['tgt_lang'](eng.rstrip("\n"))
     output.append((ko_tensor, en_tensor))
-  print("data size: {}".format( len(output)))
   return output
 
 def get_train_iter(sentences, tokens, vocabs, batch_size):

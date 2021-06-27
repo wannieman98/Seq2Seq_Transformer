@@ -27,7 +27,7 @@ class PositionalEncoding(nn.Module):
         super(PositionalEncoding, self).__init__()
         self.dropout = nn.Dropout(p=dropout)
 
-        positional_embedding = torch.zeros(max_len, d_model)
+        positional_embedding = torch.zeros((max_len, d_model))
         position = torch.arange(0, max_len).reshape(max_len, 1)
         div = torch.exp(torch.arange(0, d_model, 2) * -(math.log(10000) / d_model))
 
@@ -40,3 +40,18 @@ class PositionalEncoding(nn.Module):
     def forward(self, x):
         x = x + self.positional_embedding[:x.size(0),:].requires_grad_(False)
         return self.dropout(x)
+
+# class PositionalEncoding(nn.Module):
+#     def __init__(self, emb_size, dropout, max_len=5000):
+#         super(PositionalEncoding, self).__init__()
+#         self.dropout = nn.Dropout(p=dropout)
+#         pos = torch.arange(0, max_len).reshape(max_len, 1)
+#         pos_emb = torch.zeros((max_len, emb_size))
+#         div = torch.exp(- torch.arange(0, emb_size, 2)* math.log(10000) / emb_size)
+#         pos_emb[:, 0::2] = torch.sin(pos * div)
+#         pos_emb[:, 1::2] = torch.cos(pos * div)
+#         pos_emb = pos_emb.unsqueeze(-2)
+#         self.register_buffer('pos_emb', pos_emb)
+
+#     def forward(self, token_embedding: Tensor):
+#         return self.dropout(token_embedding + self.pos_emb[:token_embedding.size(0), :])

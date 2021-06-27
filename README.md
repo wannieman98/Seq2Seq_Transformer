@@ -75,5 +75,6 @@ python predict.py --input KOREAN_INPUT("나는 배고프다.")
 ### References
 * http://nlp.seas.harvard.edu/2018/04/03/attention#training-data-and-batching
 * https://github.com/Huffon/pytorch-transformer-kor-eng
+* https://pytorch.org/tutorials/beginner/translation_transformer.html#collation
 
 #TODO: Trying to turn the program into a runnable script which lets you train on your device with hyperparameters and data as variables.
