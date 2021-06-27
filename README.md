@@ -59,12 +59,11 @@ For Tokenizaton, I used Pytorch Tokenization using [spacy](https://spacy.io) for
     default:
     python train.py
 
-    custom:
-    train.py [-h] [--token_type {1,2}] [--file F] [--load {True,False}]
+    train.py [-h] [--token_type {1,2}] [--file FILE] [--load {True,False}]
              [--num_epoch NUM_EPOCH] [--nhead NHEAD] [--emb_size EMB_SIZE]
              [--ffn_hid_dim FFN_HID_DIM] [--batch_size BATCH_SIZE]
-             [--nlayers NUM_ENCODER_DECODER_LAYERS] [--dropout DROPOUT]
-             [--variation VARIATION {True, False}]
+             [--n_layers N_LAYERS] [--dropout DROPOUT]
+             [--variation {True,False}]
     ```
 
 * Predicting
