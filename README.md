@@ -19,8 +19,8 @@ For Tokenizaton, I used Pytorch Tokenization using [spacy](https://spacy.io) for
     [KOR]: 6.5, 7, 8 사이즈가 몇 개나 더 재입고 될지 제게 알려주시면 감사하겠습니다.
     [ENG]: I would feel grateful to know how many stocks will be secured of size 6.5, 7, and 8.
 
-    [KOR LEN]: 1600000
-    [ENG LEN]: 1600000
+    [KOR LEN]: 800000
+    [ENG LEN]: 800000
 
     soynlp tokenizer:
     [KOR]: ['11', '장에서는', '예수님', '이', '이번', '엔', '나사로를', '무덤에서', '불러', '내어', '죽은', '자', '가운데', '서', '살리셨습니다.']
@@ -63,18 +63,16 @@ For Tokenizaton, I used Pytorch Tokenization using [spacy](https://spacy.io) for
     train.py [-h] [--token_type {1,2}] [--file F] [--load {True,False}]
              [--num_epoch NUM_EPOCH] [--nhead NHEAD] [--emb_size EMB_SIZE]
              [--ffn_hid_dim FFN_HID_DIM] [--batch_size BATCH_SIZE]
-             [--num_encoder_layers NUM_ENCODER_LAYERS]
-             [--num_decoder_layers NUM_DECODER_LAYERS]
+             [--nlayers NUM_ENCODER_DECODER_LAYERS] [--dropout DROPOUT]
+             [--variation VARIATION {True, False}]
     ```
 
 * Predicting
 ```
-python predict.py --input KOREAN_INPUT("나는 배고프다.")
+python predict.py --input KOREAN_INPUT
 ```
 
 ### References
 * http://nlp.seas.harvard.edu/2018/04/03/attention#training-data-and-batching
 * https://github.com/Huffon/pytorch-transformer-kor-eng
 * https://pytorch.org/tutorials/beginner/translation_transformer.html#collation
-
-#TODO: Trying to turn the program into a runnable script which lets you train on your device with hyperparameters and data as variables.
