@@ -1,101 +1,51 @@
-from torch import nn
-import torch.nn as nn
-from copy import deepcopy as dc
-from model.pytorch_encoder_decoder import *
-from model.attention import *
+from model.embed import *
 from model.position import *
-from util import *
+import torch.nn as nn
+from torch.nn import Transformer
+from torch.nn import TransformerEncoderLayer, TransformerDecoderLayer, TransformerEncoder, TransformerDecoder
 
-class o_transformer(nn.Module):
-    def __init__(self, encoder, decoder, src_embed, tgt_embed, generator):
-        super(o_transformer, self).__init__()
-        self.encoder = encoder
-        self.decoder = decoder
-        self.src_embed = src_embed
-        self.tgt_embed = tgt_embed
-        self.generator = generator
+class Seq2SeqTransformer(nn.Module):
+    def __init__(self,
+                 num_encoder_layers: int,
+                 num_decoder_layers: int,
+                 emb_size: int,
+                 nhead: int,
+                 src_vocab_size: int,
+                 tgt_vocab_size: int,
+                 dim_feedforward: int = 512,
+                 dropout: float = 0.1):
+        super(Seq2SeqTransformer, self).__init__()
+        self.transformer = Transformer(d_model=emb_size,
+                                       nhead=nhead,
+                                       num_encoder_layers=num_encoder_layers,
+                                       num_decoder_layers=num_decoder_layers,
+                                       dim_feedforward=dim_feedforward,
+                                       dropout=dropout)
+        self.generator = nn.Linear(emb_size, tgt_vocab_size)
+        self.src_tok_emb = TokenEmbedding(src_vocab_size, emb_size)
+        self.tgt_tok_emb = TokenEmbedding(tgt_vocab_size, emb_size)
+        self.positional_encoding = PositionalEncoding(
+            emb_size, dropout=dropout)
 
-    def forward(self, src, tgt, src_mask, tgt_mask):
-        return self.decode(self.encode(src, src_mask), tgt, src_mask, tgt_mask)
+    def forward(self,
+                src,
+                trg,
+                src_mask,
+                tgt_mask,
+                src_padding_mask,
+                tgt_padding_mask,
+                memory_key_padding_mask):
+        src_emb = self.positional_encoding(self.src_tok_emb(src))
+        tgt_emb = self.positional_encoding(self.tgt_tok_emb(trg))
+        outs = self.transformer(src_emb, tgt_emb, src_mask, tgt_mask, None,
+                                src_padding_mask, tgt_padding_mask, memory_key_padding_mask)
+        return self.generator(outs)
 
     def encode(self, src, src_mask):
-        return self.encoder(self.src_embed(src), src_mask)
+        return self.transformer.encoder(self.positional_encoding(
+                            self.src_tok_emb(src)), src_mask)
 
-    def decode(self, memory, src_mask, tgt, tgt_mask):
-        return self.decoder(self.tgt_embed(tgt), memory, src_mask, tgt_mask)
-
-class p_transformer(nn.Module):
-    def __init__(self, encoder_decoder, src_embed, tgt_embed, generator):
-        super(p_transformer, self).__init__()
-        self.encoder_decoder = encoder_decoder
-        self.src_embed = src_embed
-        self.tgt_embed = tgt_embed
-        self.generator = generator
-
-    def forward(self, src, tgt, src_mask, tgt_mask):
-        return self.encode_decode(src, tgt, src_mask, tgt_mask)
-
-    def encode_decode(self, src, tgt, src_mask, tgt_mask):
-        src = src.transpose(0,1)
-        tgt = tgt.transpose(0,1)
-        return self.encoder_decoder(self.src_embed(src), src_mask, self.tgt_embed(tgt), tgt_mask)
-
-def make_src_mask(src):
-    
-    #src = [batch size, src len]
-    
-    src_mask = (src != PAD_IDX).unsqueeze(1).unsqueeze(2)
-
-    #src_mask = [batch size, 1, 1, src len]
-
-    return src_mask
-
-def make_trg_mask(trg, device):
-    
-    #trg = [batch size, trg len]
-    
-    trg_pad_mask = (trg != PAD_IDX).unsqueeze(1).unsqueeze(2)
-    
-    #trg_pad_mask = [batch size, 1, 1, trg len]
-    
-    trg_len = trg.shape[1]
-    
-    trg_sub_mask = torch.tril(torch.ones((trg_len, trg_len), device = device)).bool()
-    
-    #trg_sub_mask = [trg len, trg len]
-        
-    trg_mask = trg_pad_mask & trg_sub_mask
-    
-    #trg_mask = [batch size, 1, trg len, trg len]
-    
-    return trg_mask
-
-def build_model(vocabs, nhead, d_model, d_ff, N, device, dropout=0.1, variation=False, load=False):
-    attn = MultiHeadAttention(nhead, d_model, dropout)
-    feedforward = PositionWiseFeedForward(d_model, d_ff)
-    position = PositionalEncoding(d_model, dropout)
-    if not variation:
-        model = o_transformer(Encoder(EnocderLayer(d_model, dc(attn), dc(feedforward), dropout), N), 
-                              Decoder(DecoderLayer(d_model, dc(attn), dc(attn), dc(feedforward), dropout), N),
-                              nn.Sequential(Embeddings(d_model, len(vocabs['src_lang'])), dc(position)),
-                              nn.Sequential(Embeddings(d_model, len(vocabs['tgt_lang'])), dc(position)),
-                              Generator(d_model, len(vocabs['tgt_lang']))
-                              )
-    else:
-        model = p_transformer(Encoder_Decoder(EnocderLayer(d_model, dc(attn), dc(feedforward), dropout), DecoderLayer(d_model, dc(attn), dc(attn), dc(feedforward), dropout), N),
-                              nn.Sequential(Embeddings(d_model, len(vocabs['src_lang'])), dc(position)),
-                              nn.Sequential(Embeddings(d_model, len(vocabs['tgt_lang'])), dc(position)),
-                              Generator(d_model, len(vocabs['tgt_lang']))
-                              )
-
-    if load:
-        state_dict = torch.load('checkpoints/script_checkpoint_inf.pth')
-        model.load_state_dict(state_dict)
-    else:
-        for p in model.parameters():
-            if p.dim() > 1:
-                nn.init.xavier_uniform_(p)
-
-    model.to(device)
-
-    return model
+    def decode(self, tgt, memory, tgt_mask):
+        return self.transformer.decoder(self.positional_encoding(
+                          self.tgt_tok_emb(tgt)), memory,
+                          tgt_mask)
