@@ -1,9 +1,10 @@
 import os
+import pickle
 import random
 import pandas as pd
-from tokens import *
-from vocabs import *
-from data_loader import *
+from utils.vocabs import build_vocabs, pickle_vocabs
+from data_loader import get_train_iter, get_test_iter
+from utils.tokens import get_ko_tokenizer, get_tokenizer
 
 class Data:
     def __init__(self, load, batch_size):

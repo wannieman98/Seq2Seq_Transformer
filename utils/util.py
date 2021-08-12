@@ -1,7 +1,8 @@
-from vocabs import PAD_IDX, EOS_IDX, SOS_IDX
-import torch.nn as nn
-import torch
 import copy
+import torch
+import torch.nn as nn
+from vocabs import PAD_IDX, EOS_IDX, SOS_IDX
+
 
 def clones(module, N):
     return nn.ModuleList([ copy.deepcopy(module) for _ in range(N) ])

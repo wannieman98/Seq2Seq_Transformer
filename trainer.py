@@ -3,11 +3,11 @@ import torch
 import random
 import numpy as np
 import torch.nn as nn
-from data_util import Data
 import torch.optim as optim
+from utils.data_util import Data
 import nltk.translate.bleu_score as bs
 from model.transformer import Transformer
-from util import epoch_time, translate, PAD_IDX
+from utils.util import epoch_time, translate, PAD_IDX
 
 SEED = 981126
 
