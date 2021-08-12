@@ -3,13 +3,13 @@ import pickle
 import random
 import pandas as pd
 from utils.vocabs import build_vocabs, pickle_vocabs
-from data_loader import get_train_iter, get_test_iter
+from utils.data_loader import get_train_iter, get_test_iter
 from utils.tokens import get_ko_tokenizer, get_tokenizer
 
 class Data:
-    def __init__(self, load, batch_size):
+    def __init__(self, load, batch_size, root = "./data/excels"):
         super(Data, self).__init__()
-        self.root = "./data/excels"
+        self.root = root
         self.load = load
         self.train, self.val, self.test = self.get_sentences()
         self.tokens = self.get_tokens()
@@ -37,7 +37,7 @@ class Data:
     def get_sentences(self):
         csv_files = None
         if not self.load:
-            files = os.listdir("./data/excels")
+            files = os.listdir(self.root)
             csv_files = self.convert_to_csv(files)
             
         sentences = self.convert_to_sentences(csv_files)
@@ -47,6 +47,7 @@ class Data:
         count = 1
         csv_files = []
         for filepath in files:
+            # Only supports .xlsx files 
             if filepath[-4:] == "xlsx":
                 xls = pd.read_excel(os.path.join(self.root, filepath), index_col=None)
                 destination = 'data/csvs/korean_to_english' + str(count) + '.csv'

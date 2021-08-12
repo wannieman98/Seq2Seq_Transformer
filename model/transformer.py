@@ -43,14 +43,14 @@ class Transformer(nn.Module):
                 memory_key_padding_mask):
         return self.decode(tgt, self.encode(src, src_mask, src_padding_mask), tgt_mask, None, tgt_padding_mask, memory_key_padding_mask)
 
-    def encode(self, src, src_mask, src_padding_mask):
+    def encode(self, src, src_mask, src_padding_mask=None):
         return self.encoder(
             self.positional_encoding(self.src_tok_emb(src)), 
             src_mask,
             src_padding_mask
             )
 
-    def decode(self, tgt, memory, tgt_mask, memory_mask, tgt_padding_mask, memory_key_padding_mask):
+    def decode(self, tgt, memory, tgt_mask, memory_mask=None, tgt_padding_mask=None, memory_key_padding_mask=None):
         return self.decoder(
             self.positional_encoding(self.tgt_tok_emb(tgt)), 
             memory, 

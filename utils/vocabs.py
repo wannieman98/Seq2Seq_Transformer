@@ -6,9 +6,7 @@ UNK_IDX, PAD_IDX, SOS_IDX, EOS_IDX = 0, 1, 2, 3
 def build_vocabs(sentences, tokens):
     vocabs = {}
 
-    special_symbols =['<unk>', '<pad>', '<bos>', '<eos>']
-
-    assert tt.__version__ != '0.10.0', "Need torchtext 0.10.0 <= in order to build vocabs."
+    special_symbols =['<unk>', '<pad>', '<sos>', '<eos>']
 
     for ln in ['src_lang', 'tgt_lang']:
         vocabs[ln] = tt.build_vocab_from_iterator(iterator=yield_tokens(sentences, ln, tokens),

@@ -7,7 +7,8 @@ import torch.optim as optim
 from utils.data_util import Data
 import nltk.translate.bleu_score as bs
 from model.transformer import Transformer
-from utils.util import epoch_time, translate, PAD_IDX
+from utils.util import epoch_time, translate
+from utils.vocabs import  PAD_IDX
 
 SEED = 981126
 

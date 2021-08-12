@@ -3,7 +3,6 @@ import torch
 import torch.nn as nn
 from vocabs import PAD_IDX, EOS_IDX, SOS_IDX
 
-
 def clones(module, N):
     return nn.ModuleList([ copy.deepcopy(module) for _ in range(N) ])
 
@@ -37,23 +36,16 @@ def epoch_time(time, curr_epoch, total_epochs):
 def greedy_decode(model, src, src_mask, max_len, start_symbol, device, gen):
     src = src.to(device)
     src_mask = src_mask.to(device)
-    trg = torch.ones(1, 1).fill_(start_symbol).type(torch.long).to(device)
+    tgt = torch.ones(1, 1).fill_(start_symbol).type(torch.long).to(device)
     for i in range(max_len-1):
         tgt_mask = (generate_square_subsequent_mask(trg.size(0), device)
                     .type(torch.bool)).to(device)
-        # encoded = model.encode(src=src, src_mask=src_mask)
-        with torch.no_grad():
-            out = model.encode_decode(src = src,
-                                      src_mask = src_mask,
-                                      tgt = trg,
-                                      tgt_mask = tgt_mask
-                                      )
-            # out = model.decode(x=trg, memory=encoded, src_mask=src_mask, tgt_mask=tgt_mask)
-            out = out.transpose(0, 1)
-            prob = gen(out[:,-1])
-            # prob = model.generator(out[:, -1])
-            _, next_word = torch.max(prob, dim=1)
-            next_word = next_word.item()
+        encoded = model.encode(src=src, src_mask=src_mask)
+        out = model.decode(tgt, encoded, src_mask, tgt_mask)
+        out = out.transpose(0, 1)
+        prob = gen(out[:,-1])
+        _, next_word = torch.max(prob, dim=1)
+        next_word = next_word.item()
 
         trg = torch.cat([trg,
                         torch.ones(1, 1).type_as(src.data).fill_(next_word)], dim=0)

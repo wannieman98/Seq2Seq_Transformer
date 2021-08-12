@@ -1,7 +1,7 @@
 import torch
 from torch.utils.data import DataLoader
 from torch.nn.utils.rnn import pad_sequence
-from utils.util import SOS_IDX, EOS_IDX, PAD_IDX
+from utils.vocabs import SOS_IDX, EOS_IDX, PAD_IDX
 
 def sequential_transforms(*transforms):
 	def func(txt_input):
@@ -27,7 +27,6 @@ def get_text_transform(tokens, vocabs):
 											)
 	return text_transform
 
-
 def collate_fn(batch):
 	src_batch, tgt_batch = [], []
 	for src_sample, tgt_sample in batch:
@@ -36,7 +35,6 @@ def collate_fn(batch):
 	src_batch = pad_sequence(src_batch, padding_value=PAD_IDX)
 	tgt_batch = pad_sequence(tgt_batch, padding_value=PAD_IDX)
 	return src_batch, tgt_batch
-
 
 def data_process(sentences, vocabs, tokens):
 	output = []
