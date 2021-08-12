@@ -1,11 +1,13 @@
 import time
+import torch
 import random
 import numpy as np
-from util import *
-from data_util import *
+import torch.nn as nn
+from data_util import Data
 import torch.optim as optim
-from model.transformer import *
 import nltk.translate.bleu_score as bs
+from model.transformer import Transformer
+from util import epoch_time, translate, PAD_IDX
 
 SEED = 981126
 
@@ -36,7 +38,7 @@ class Trainer:
         self.params['src_vocab_size'] = len(self.data.vocabs['src_lang'])
         self.params['tgt_vocab_size'] = len(self.data.vocabs['tgt_lang'])
 
-        self.transformer = Seq2SeqTransformer(self.params['n_layers'], self.params['n_layers'], self.params['emb_size'],
+        self.transformer = Transformer(self.params['n_layers'], self.params['n_layers'], self.params['emb_size'],
                                               self.params['nhead'], self.params['src_vocab_size'], self.params['tgt_vocab_size'],
                                               self.params['ffn_hid_dim'], self.params['dropout'])
 
