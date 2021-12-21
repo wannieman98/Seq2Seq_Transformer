@@ -1,4 +1,6 @@
-# Transformer PyTorch
+# Seq2Seq Transformer
+
+![PWC](https://paperswithcode.com/sota/machine-translation-on-wmt2014-english-french)
 
 Unofficial Python implementation of [Transformer](https://arxiv.org/pdf/1706.03762.pdf) using PyTorch to translate Korean into English.
 ![](assets/transformer.png)
