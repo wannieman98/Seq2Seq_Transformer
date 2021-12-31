@@ -1,5 +1,5 @@
 import torch.nn as nn
-from util import clones
+from utils.util import clones
 
 class EncoderLayer(nn.Module):
     """

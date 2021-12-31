@@ -50,6 +50,8 @@ class Data:
             # Only supports .xlsx files 
             if filepath[-4:] == "xlsx":
                 xls = pd.read_excel(os.path.join(self.root, filepath), index_col=None)
+                if not os.path.isdir('data/csvs'):
+                    os.mkdir('data/csvs')
                 destination = 'data/csvs/korean_to_english' + str(count) + '.csv'
                 xls.to_csv(destination, encoding='utf-8', index=False)
                 csv_files.append(destination)
@@ -61,6 +63,9 @@ class Data:
 
         if not self.load:
             dataframes = [ pd.read_csv(filepath) for filepath in csv_files ]
+
+            if not os.path.isdir('./data/pickles'):
+                os.mkdir('./data/pickles')
 
             for data in dataframes:
                 for index, sent in data.iterrows():

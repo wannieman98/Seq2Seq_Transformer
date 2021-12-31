@@ -1,6 +1,7 @@
 import pickle
 from soynlp.word import WordExtractor
 from soynlp.tokenizer import LTokenizer
+from torchtext.data.utils import get_tokenizer
 
 def get_ko_tokenizer(sentences, load):
   if not load:
